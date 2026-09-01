@@ -1,0 +1,11 @@
+This repository contains build scripts and configuration fragments for a
+Linux kernel derived from Android GKI / EVONIX.
+
+The Linux kernel is licensed under the GNU General Public License v2.
+See https://www.kernel.org/doc/html/latest/process/license-rules.html
+
+Scripts in this repository that are original to ROOTURK are provided
+under GPL-2.0-only, the same terms as the kernel they configure.
+
+Upstream:
+  https://github.com/NEESCHAL-3/EVONIX-Kernel

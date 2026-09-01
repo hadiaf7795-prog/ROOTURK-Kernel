@@ -1,0 +1,8 @@
+out/
+*.img
+Image
+Image.gz
+*.zip
+*.tar.gz
+.DS_Store
+Thumbs.db
