@@ -48,5 +48,33 @@ else
 fi
 
 ui_print " "
+ui_print "  Installing ROOTURK Manager..."
+mkdir -p /data/adb/modules/rooturk-manage
+if [ -f "$home/rooturk-manager.apk" ]; then
+    cp -f "$home/rooturk-manager.apk" /data/adb/modules/rooturk-manager/rooturk-manager.apk
+    cp -f "$home/rooturk-module.prop" /data/adb/modules/rooturk-manager/module.prop
+    cp -f "$home/rooturk-service.sh" /data/adb/modules/rooturk-manager/service.sh
+    chmod 755 /data/adb/modules/rooturk-manager/service.sh
+    rm -f /data/adb/modules/rooturk-manager/disable
+    SIZE=$(toybox wc -c < "$home/rooturk-manager.apk" | tr -d ' \n')
+    if [ "$(getprop sys.boot_completed)" = 1 ] && [ -n "$SIZE" ]; then
+        TMP=/data/local/tmp/rooturk-manager.apk
+        cp -f "$home/rooturk-manager.apk" "$TMP"
+        chmod 644 "$TMP"
+        chcon u:object_r:apk_data_file:s0 "$TMP" 2>/dev/null
+        if pm install -r "$TMP" >/dev/null 2>&1; then
+            ui_print "  Manager installed."
+        else
+            ui_print "  Manager staged for first boot."
+        fi
+        rm -f "$TMP"
+    else
+        ui_print "  Manager staged for first boot."
+    fi
+else
+    ui_print "  Manager APK missing from zip (kernel still flashed)."
+fi
+
+ui_print " "
 ui_print "  Done! Reboot your device."
 ui_print " "

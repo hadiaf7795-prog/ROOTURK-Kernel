@@ -1,47 +1,49 @@
 # ROOTURK Kernel
 
-Custom **Android 15 GKI** kernel for the **POCO X7 Pro** (`rodin`).
+**POCO X7 Pro** (`rodin`) için özel **Android 15 GKI** çekirdeği.
+
+English: [README.en.md](README.en.md)
 
 | | |
 |---|---|
-| Device | POCO X7 Pro (2412DPC0AG) |
+| Cihaz | POCO X7 Pro (2412DPC0AG) |
 | SoC | MediaTek Dimensity 8400 Ultra (MT6899) |
-| Release | `6.6.142-1.0.0-ROOTURK-V1.0-android15-8-4k` |
-| Page size | 4K |
-| Root | KernelSU Next 3.3.0 (built into the kernel) |
-| Hide | SuSFS v2.2.0 (GKI) |
+| Sürüm | `6.6.142-1.0.0-ROOTURK-V1.0-android15-8-4k` |
+| Sayfa boyutu | 4K |
+| Root | KernelSU Next 3.3.0 (çekirdeğin içinde) |
+| Gizleme | SuSFS v2.2.0 (GKI) |
 
-**Telegram:** [t.me/AndroidVendor](https://t.me/AndroidVendor)  
-**Manager app:** [ROOTURK-Manager](https://github.com/RooTurkk/ROOTURK-Manager)
+**Telegram:** [t.me/AndroidVendor](https://t.me/AndroidVendor)
 
-This repository contains the **full kernel source**, AnyKernel3 packaging, build scripts, and the Wi-Fi latency boot script.
-
----
-
-## Features
-
-- **In-kernel KernelSU Next** — no LKM, no `ksu.ko`. Grant the KernelSU Next app and ROOTURK Manager superuser after the first boot.
-- **SuSFS** — suspicious path / mount / kstat / map hiding, uname and cmdline spoof, open-redirect, KSU/SuSFS symbol hiding.
-- **Vendor Wi-Fi / BT modules load** — BTF mismatch allowed, module version magic relaxed, in-tree `CFG80211` off so MediaTek `wlan_drv_gen4m_6899` stays in charge.
-- **TCP BBR + FQ** — default congestion control is BBR; ROOTURK Manager can still switch Cubic at runtime.
-- **ZSWAP on by default** (LZ4 + zbud) and **KSM**.
-- **Idle tuned for games** — `CONFIG_CPU_IDLE_GOV_TEO` is **off**. MENU stays; the vendor idle governor `lpm_gov_mhsp` remains available. TEO was parking CPU0 in `s2idle` (~20 ms wake) while WLAN IRQs sat on that little core (see [docs/WIFI.md](docs/WIFI.md)).
-- **Vendor ABI** — same `task_struct` layout, ARM64 MTE, and KASAN HW tags as the working stock GKI. `TRIM_UNUSED_KSYMS` is left off (over-trim bootloops this phone).
-- **Bypass-charge helper** for the MT6899 / Xiaomi charging path (used with ROOTURK Manager).
-- **AnyKernel3 zip** writes **`boot` only**. Recovery lives on **`vendor_boot`**. Do **not** use `fastboot boot`.
+Bu depoda **tam çekirdek kaynağı**, AnyKernel3 paketleme, derleme betikleri ve Wi‑Fi gecikme açılış betiği vardır. **ROOTURK Manager** ayrı repo değildir; flaş zip’inin içinden kurulur.
 
 ---
 
-## Install
+## Özellikler
 
-Full steps: **[INSTALL.md](INSTALL.md)**.
+- **Çekirdek içi KernelSU Next** — LKM yok, `ksu.ko` yok. ROOTURK Manager bir KernelSU yöneticisidir (otomatik root). KernelSU Next’in kendi uygulaması da çalışır.
+- **SuSFS** — şüpheli yol / mount / kstat / map gizleme, uname ve cmdline spoof, open-redirect, KSU/SuSFS sembol gizleme.
+- **Vendor Wi‑Fi / BT modülleri yüklenir** — BTF uyumsuzluğuna izin, modül sürüm sihri gevşek, ağaç içi `CFG80211` kapalı; MediaTek `wlan_drv_gen4m_6899` yönetir.
+- **TCP BBR + FQ** — varsayılan tıkanıklık denetimi BBR; Manager çalışma anında Cubic’e geçebilir.
+- **ZSWAP varsayılan açık** (LZ4 + zbud) ve **KSM**.
+- **Oyun için idle** — `CONFIG_CPU_IDLE_GOV_TEO` **kapalı**. MENU durur; vendor `lpm_gov_mhsp` kullanılabilir. TEO, CPU0’ı `s2idle`’da (~20 ms uyanma) bırakıyordu; WLAN kesmeleri o little çekirdekteydi ([docs/WIFI.md](docs/WIFI.md)).
+- **Vendor ABI** — stok GKI ile aynı `task_struct`, ARM64 MTE ve KASAN HW etiketleri. `TRIM_UNUSED_KSYMS` kapalı (bu telefonda bootloop).
+- **Şarj yardımcı yolu** — MT6899 / Xiaomi şarj hattı (Manager ile kullanılır).
+- **Zip içinde ROOTURK Manager** — AnyKernel APK’yi KernelSU modülü olarak yerleştirir. Sistem açıkken flaşta `pm install` dener; değilse ilk açılışta kurar. Çekirdek, APK’nin v2 imza sertifikasını KernelSU yöneticisi olarak tanır (`su` izni penceresi yok).
+- **AnyKernel3 zip yalnızca `boot` yazar.** Recovery **`vendor_boot`** üzerindedir. **`fastboot boot` kullanma.**
 
-Short version:
+---
 
-1. Unlocked bootloader, custom recovery in **`vendor_boot`** (OrangeFox on this device).
-2. Build the AnyKernel zip (or use a GitHub Release if one is attached).
-3. Flash the zip from recovery **or** from Android with root via `scripts/flash_rooturk.sh`.
-4. Reboot. Check:
+## Kurulum
+
+Ayrıntılı adımlar: **[INSTALL.md](INSTALL.md)** (İngilizce).
+
+Kısa özet:
+
+1. Açık bootloader, özel recovery **`vendor_boot`** içinde (bu cihazda OrangeFox).
+2. AnyKernel zip’ini derle (veya GitHub Release varsa onu kullan).
+3. Zip’i recovery’den **veya** root ile Android’den `scripts/flash_rooturk.sh` ile flaşla.
+4. Yeniden başlat. Kontrol:
 
 ```text
 adb shell uname -r
@@ -51,68 +53,74 @@ adb shell su -c "cat /sys/devices/system/cpu/cpuidle/available_governors"
 # menu lpm_gov_mhsp
 ```
 
-5. Install [ROOTURK Manager](https://github.com/RooTurkk/ROOTURK-Manager) and grant it superuser. Optional: copy `scripts/98-rooturk-wifi-latency.sh` to `/data/adb/service.d/` (the Manager app can also install it).
+5. Manager otomatik kurulur; imzası KernelSU yöneticisi olarak işlenir. KernelSU Next’in kendi yöneticisi de geçerlidir.
+
+İsteğe bağlı Wi‑Fi oyun kipi (Manager **Ağ** sayfasından da kurulur): betik `scripts/98-rooturk-wifi-latency.sh`.
 
 ---
 
-## Build
+## Derleme
 
-Full steps: **[docs/BUILDING.md](docs/BUILDING.md)**.
+Ayrıntı: **[docs/BUILDING.md](docs/BUILDING.md)**.
 
-You need **WSL2 Ubuntu 24.04** (or native Linux), Android 15 **Clang r510928**, and about 12 GB RAM.
+**WSL2 Ubuntu 24.04** (veya yerli Linux), Android 15 **Clang r510928**, yaklaşık 12 GB RAM gerekir.
 
 ```bash
 git clone --recurse-submodules https://github.com/RooTurkk/ROOTURK-Kernel.git
 cd ROOTURK-Kernel
-# Clone on Linux/WSL ext4. NTFS cannot store some kernel filenames.
-# point CLANG_BIN at your clang-r510928/bin
+# Linux/WSL ext4 üzerine klonla. NTFS bazı çekirdek dosya adlarını tutamaz.
+# CLANG_BIN → clang-r510928/bin
 bash scripts/build-config.sh
-bash scripts/fix-rooturk-config.sh   # produces Image.gz
-bash scripts/pack-rooturk.sh         # produces 1.0.0-ROOTURK-V1.0.zip
+bash scripts/fix-rooturk-config.sh   # Image.gz
+bash scripts/pack-rooturk.sh         # 1.0.0-ROOTURK-V1.0.zip
 ```
 
-Source tree: [`kernel/`](kernel/). Do not enable `TRIM_UNUSED_KSYMS`.
+Kaynak: [`kernel/`](kernel/). `TRIM_UNUSED_KSYMS` açma.
+
+Zip’e Manager koymak için imzalı `anykernel/rooturk-manager.apk` dosyasını paketlemeden önce yerleştir (`anykernel/*.apk` git’te yok).
 
 ---
 
-## Tree
+## Ağaç
 
 ```text
 kernel/                                  Linux 6.6 GKI + KernelSU Next + SuSFS
   arch/arm64/configs/gki_defconfig
   arch/arm64/configs/rooturk_gki.config
   KernelSU-Next/
-anykernel/                               AnyKernel3 template (boot only)
-configs/rooturk.config                   extra fragment (idle, ZSWAP, LOCALVERSION)
-scripts/build-config.sh                  gki_defconfig + ROOTURK merge
-scripts/fix-rooturk-config.sh            fragment + Image.gz
-scripts/build-image.sh                   Image.gz only (existing .config)
-scripts/pack-rooturk.sh                  zip
-scripts/flash_rooturk.sh                 flash zip on device (su)
-scripts/98-rooturk-wifi-latency.sh       boot: Wi-Fi boost / save
+anykernel/                               AnyKernel3 (yalnızca boot)
+configs/rooturk.config                   idle, ZSWAP, LOCALVERSION
+scripts/build-config.sh
+scripts/fix-rooturk-config.sh
+scripts/build-image.sh
+scripts/pack-rooturk.sh
+scripts/flash_rooturk.sh
+scripts/98-rooturk-wifi-latency.sh
 docs/BUILDING.md
 docs/WIFI.md
 INSTALL.md
+README.en.md
 ```
 
 ---
 
-## What this zip does not flash
+## Bu zip’in flaşlamadığı şeyler
 
 - `vendor_boot` / recovery
-- `init_boot` (AK3 uses `split_boot` only if that partition exists; on rodin the payload is `boot`)
+- `init_boot` (AK3 bu bölüm varsa `split_boot` kullanır; rodin’de yük `boot`)
 - super / system / vendor
-- ROOTURK Manager APK (separate repo)
+
+ROOTURK Manager zip’in içindedir; ayrı uygulama deposu yoktur.
 
 ---
 
-## Support
+## Destek
 
-Telegram channel: **[https://t.me/AndroidVendor](https://t.me/AndroidVendor)**
+Telegram: **[https://t.me/AndroidVendor](https://t.me/AndroidVendor)**
 
 ---
 
-## License
+## Lisans
 
-GPL-2.0. See [`LICENSE`](LICENSE) and [`kernel/COPYING`](kernel/COPYING).  
-KernelSU Next has its own license under `kernel/KernelSU-Next/LICENSE`.
+GPL-2.0. [`LICENSE`](LICENSE) ve [`kernel/COPYING`](kernel/COPYING).  
+KernelSU Next: `kernel/KernelSU-Next/LICENSE`.

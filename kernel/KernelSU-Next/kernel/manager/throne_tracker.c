@@ -14,6 +14,7 @@
 #include "manager/throne_tracker.h"
 
 uid_t ksu_manager_appid = KSU_INVALID_APPID;
+uid_t ksu_manager_appid_extra = KSU_INVALID_APPID;
 
 #define SYSTEM_PACKAGES_LIST_PATH "/data/system/packages.list"
 
@@ -141,9 +142,8 @@ FILLDIR_RETURN_TYPE my_actor(struct dir_context *ctx, const char *name,
 					is_manager);
 			if (is_manager) {
 				crown_manager(dirpath, my_ctx->private_data);
-				*my_ctx->stop = 1;
+				/* Keep scanning: ROOTURK Manager + KernelSU Next may both match. */
 
-				// Manager found, clear APK cache list
 				list_for_each_entry_safe (pos, n, &apk_path_hash_list, list) {
 					list_del(&pos->list);
 					kfree(pos);
@@ -320,21 +320,29 @@ void track_throne(bool prune_only)
 	if (prune_only)
 		goto prune;
 
-	// first, check if manager_uid exist!
-	bool manager_exist = false;
+	// first, check if crowned managers still exist
+	bool primary_ok = false;
+	bool extra_ok = false;
 	list_for_each_entry (np, &uid_list, list) {
-		if (np->uid == ksu_get_manager_appid()) {
-			manager_exist = true;
-			break;
-		}
+		if (ksu_manager_appid != KSU_INVALID_APPID &&
+		    np->uid == ksu_manager_appid)
+			primary_ok = true;
+		if (ksu_manager_appid_extra != KSU_INVALID_APPID &&
+		    np->uid == ksu_manager_appid_extra)
+			extra_ok = true;
 	}
 
-	if (!manager_exist) {
-		if (ksu_is_manager_appid_valid()) {
-			pr_info("manager is uninstalled, invalidate it!\n");
-			ksu_invalidate_manager_uid();
-			goto prune;
-		}
+	if (ksu_manager_appid != KSU_INVALID_APPID && !primary_ok) {
+		pr_info("primary manager uninstalled, invalidate it!\n");
+		ksu_manager_appid = KSU_INVALID_APPID;
+	}
+	if (ksu_manager_appid_extra != KSU_INVALID_APPID && !extra_ok) {
+		pr_info("extra manager uninstalled, invalidate it!\n");
+		ksu_manager_appid_extra = KSU_INVALID_APPID;
+	}
+
+	if (ksu_manager_appid == KSU_INVALID_APPID ||
+	    ksu_manager_appid_extra == KSU_INVALID_APPID) {
 		pr_info("Searching manager...\n");
 		search_manager("/data/app", 2, &uid_list);
 		pr_info("Search manager finished\n");

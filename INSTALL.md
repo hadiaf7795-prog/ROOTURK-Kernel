@@ -1,5 +1,7 @@
 # Install ROOTURK Kernel
 
+Türkçe özet: [README.md](README.md) · English overview: [README.en.md](README.en.md)
+
 For **POCO X7 Pro (`rodin`)** only. Wrong device = no boot.
 
 ## Before you flash
@@ -35,7 +37,7 @@ adb push 1.0.0-ROOTURK-V1.0.zip /sdcard/Download/
 
 1. Reboot to recovery.
 2. Flash `1.0.0-ROOTURK-V1.0.zip`.
-3. Do **not** flash a Magisk apk as a kernel. KernelSU Next is already inside the Image.
+3. Do **not** flash a Magisk apk as a kernel. KernelSU Next is already inside the Image. ROOTURK Manager is inside this zip.
 4. Reboot to system.
 
 A/B slot is handled by AnyKernel (`is_slot_device=auto`).
@@ -67,7 +69,17 @@ cat /sys/devices/system/cpu/cpuidle/available_governors
 ls /data/adb/ksu             # KernelSU Next data after the manager app runs
 ```
 
-Open **KernelSU Next**, complete the setup, then install [ROOTURK Manager](https://github.com/RooTurkk/ROOTURK-Manager) and grant it root.
+After reboot, KernelSU module `rooturk-manager` runs `pm install`. The kernel recognizes that APK’s v2 certificate, so ROOTURK Manager is a KernelSU **manager** (`su` works with no grant popup). KernelSU Next’s own manager APK remains valid.
+
+```text
+pm path com.rooturk.manager
+# package:/data/app/.../base.apk
+
+adb shell su -c id
+# still works for an already-rooted shell
+
+# inside ROOTURK Manager, Durum should show "Root açık" without opening KernelSU Next
+```
 
 Optional Wi-Fi game mode (also installed from the Manager **Network** page):
 
