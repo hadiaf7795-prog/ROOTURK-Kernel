@@ -3,4 +3,4 @@ name=ROOTURK Manager
 version=1.0.0
 versionCode=100
 author=ROOTURK
-description=Installs ROOTURK Manager. The ROOTURK kernel treats this APK as a KernelSU manager (automatic root, no grant prompt).
+description=Installs ROOTURK Manager as a system app (cannot be uninstalled). The ROOTURK kernel treats this APK as a KernelSU manager.

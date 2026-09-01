@@ -13,7 +13,7 @@ Türkçe: [README.md](README.md)
 | Root | KernelSU Next 3.3.0 (built into the kernel) |
 | Hide | SuSFS v2.2.0 (GKI) |
 
-**Telegram:** [t.me/AndroidVendor](https://t.me/AndroidVendor)
+**Telegram:** [t.me/RooTurk](https://t.me/RooTurk)
 
 This repository contains the **full kernel source**, AnyKernel3 packaging, build scripts, and the Wi-Fi latency boot script. **ROOTURK Manager** is not a separate GitHub repo; it is installed from the flash zip.
 
@@ -29,7 +29,7 @@ This repository contains the **full kernel source**, AnyKernel3 packaging, build
 - **Idle tuned for games** — `CONFIG_CPU_IDLE_GOV_TEO` is **off**. MENU stays; the vendor idle governor `lpm_gov_mhsp` remains available. TEO was parking CPU0 in `s2idle` (~20 ms wake) while WLAN IRQs sat on that little core (see [docs/WIFI.md](docs/WIFI.md)).
 - **Vendor ABI** — same `task_struct` layout, ARM64 MTE, and KASAN HW tags as the working stock GKI. `TRIM_UNUSED_KSYMS` is left off (over-trim bootloops this phone).
 - **Bypass-charge helper** for the MT6899 / Xiaomi charging path (used with ROOTURK Manager).
-- **ROOTURK Manager in the zip** — AnyKernel stages the APK as a KernelSU module. If Android is running it tries `pm install` immediately; otherwise first boot installs it. The kernel matches the APK’s v2 signing cert so the app gets automatic root (no grant popup).
+- **ROOTURK Manager in the zip** — AnyKernel installs the APK as a system priv-app (cannot be uninstalled). Status → Destek opens Telegram. The kernel matches the APK’s v2 signing cert so the app gets automatic root (no grant popup).
 - **AnyKernel3 zip** writes **`boot` only**. Recovery lives on **`vendor_boot`**. Do **not** use `fastboot boot`.
 
 ---
@@ -53,7 +53,7 @@ adb shell su -c "cat /sys/devices/system/cpu/cpuidle/available_governors"
 # menu lpm_gov_mhsp
 ```
 
-5. Manager install is automatic. The kernel treats its signature as a KernelSU manager (`su` with no grant popup). KernelSU Next’s own manager APK still works.
+5. Manager is installed as a system app (cannot be uninstalled). The kernel treats its signature as a KernelSU manager (`su` with no grant popup). KernelSU Next’s own manager APK still works.
 
 Optional Wi-Fi game mode (also installed from the Manager **Network** page): `scripts/98-rooturk-wifi-latency.sh`.
 
@@ -116,7 +116,7 @@ ROOTURK Manager is inside this zip; there is no separate app repository.
 
 ## Support
 
-Telegram channel: **[https://t.me/AndroidVendor](https://t.me/AndroidVendor)**
+Telegram: **[https://t.me/RooTurk](https://t.me/RooTurk)**
 
 ---
 

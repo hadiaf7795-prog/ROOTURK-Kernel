@@ -13,7 +13,7 @@ English: [README.en.md](README.en.md)
 | Root | KernelSU Next 3.3.0 (çekirdeğin içinde) |
 | Gizleme | SuSFS v2.2.0 (GKI) |
 
-**Telegram:** [t.me/AndroidVendor](https://t.me/AndroidVendor)
+**Telegram:** [t.me/RooTurk](https://t.me/RooTurk)
 
 Bu depoda **tam çekirdek kaynağı**, AnyKernel3 paketleme, derleme betikleri ve Wi‑Fi gecikme açılış betiği vardır. **ROOTURK Manager** ayrı repo değildir; flaş zip’inin içinden kurulur.
 
@@ -29,7 +29,7 @@ Bu depoda **tam çekirdek kaynağı**, AnyKernel3 paketleme, derleme betikleri v
 - **Oyun için idle** — `CONFIG_CPU_IDLE_GOV_TEO` **kapalı**. MENU durur; vendor `lpm_gov_mhsp` kullanılabilir. TEO, CPU0’ı `s2idle`’da (~20 ms uyanma) bırakıyordu; WLAN kesmeleri o little çekirdekteydi ([docs/WIFI.md](docs/WIFI.md)).
 - **Vendor ABI** — stok GKI ile aynı `task_struct`, ARM64 MTE ve KASAN HW etiketleri. `TRIM_UNUSED_KSYMS` kapalı (bu telefonda bootloop).
 - **Şarj yardımcı yolu** — MT6899 / Xiaomi şarj hattı (Manager ile kullanılır).
-- **Zip içinde ROOTURK Manager** — AnyKernel APK’yi KernelSU modülü olarak yerleştirir. Sistem açıkken flaşta `pm install` dener; değilse ilk açılışta kurar. Çekirdek, APK’nin v2 imza sertifikasını KernelSU yöneticisi olarak tanır (`su` izni penceresi yok).
+- **Zip içinde ROOTURK Manager** — AnyKernel APK’yi sistem uygulaması (`priv-app`) olarak kurar; Ayarlar’dan silinemez. Durum sekmesinin altında Destek, Telegram’a gider. Çekirdek, APK’nin v2 imza sertifikasını KernelSU yöneticisi olarak tanır (`su` izni penceresi yok).
 - **AnyKernel3 zip yalnızca `boot` yazar.** Recovery **`vendor_boot`** üzerindedir. **`fastboot boot` kullanma.**
 
 ---
@@ -53,7 +53,7 @@ adb shell su -c "cat /sys/devices/system/cpu/cpuidle/available_governors"
 # menu lpm_gov_mhsp
 ```
 
-5. Manager otomatik kurulur; imzası KernelSU yöneticisi olarak işlenir. KernelSU Next’in kendi yöneticisi de geçerlidir.
+5. Manager sistem uygulaması olarak kurulur (silinemez); imzası KernelSU yöneticisi olarak işlenir. KernelSU Next’in kendi yöneticisi de geçerlidir.
 
 İsteğe bağlı Wi‑Fi oyun kipi (Manager **Ağ** sayfasından da kurulur): betik `scripts/98-rooturk-wifi-latency.sh`.
 
@@ -116,7 +116,7 @@ ROOTURK Manager zip’in içindedir; ayrı uygulama deposu yoktur.
 
 ## Destek
 
-Telegram: **[https://t.me/AndroidVendor](https://t.me/AndroidVendor)**
+Telegram: **[https://t.me/RooTurk](https://t.me/RooTurk)**
 
 ---
 

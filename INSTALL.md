@@ -69,11 +69,11 @@ cat /sys/devices/system/cpu/cpuidle/available_governors
 ls /data/adb/ksu             # KernelSU Next data after the manager app runs
 ```
 
-After reboot, KernelSU module `rooturk-manager` runs `pm install`. The kernel recognizes that APK’s v2 certificate, so ROOTURK Manager is a KernelSU **manager** (`su` works with no grant popup). KernelSU Next’s own manager APK remains valid.
+After reboot, KernelSU module `rooturk-manager` installs ROOTURK Manager as a **system priv-app**. Settings cannot uninstall it. The kernel recognizes that APK’s v2 certificate, so ROOTURK Manager is a KernelSU **manager** (`su` works with no grant popup). KernelSU Next’s own manager APK remains valid. In the app, **Durum → Destek** opens Telegram.
 
 ```text
 pm path com.rooturk.manager
-# package:/data/app/.../base.apk
+# package:/system/priv-app/ROOTURKManager/ROOTURKManager.apk
 
 adb shell su -c id
 # still works for an already-rooted shell
@@ -101,4 +101,4 @@ Again: **`fastboot boot` is not a recovery method on this phone.**
 
 ## Support
 
-[t.me/AndroidVendor](https://t.me/AndroidVendor)
+[t.me/RooTurk](https://t.me/RooTurk)
