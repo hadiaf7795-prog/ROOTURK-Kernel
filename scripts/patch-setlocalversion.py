@@ -1,5 +1,8 @@
+import os
 from pathlib import Path
-p = Path("/root/android/src/common/scripts/setlocalversion")
+
+src = Path(os.environ.get("KERNEL_SRC", "kernel"))
+p = src / "scripts" / "setlocalversion"
 t = p.read_text()
 old = '''# version string from CONFIG_LOCALVERSION
 config_localversion=$(sed -n 's/^CONFIG_LOCALVERSION=\\(.*\\)$/\\1/p' include/config/auto.conf)
@@ -29,6 +32,9 @@ config_localversion=$(sed -n 's/^CONFIG_LOCALVERSION=//p' include/config/auto.co
 echo "${KERNELVERSION}${config_localversion}${LOCALVERSION}"
 '''
 if old not in t:
+    if "Do not append git -g/-dirty" in t:
+        print("setlocalversion already patched")
+        raise SystemExit(0)
     raise SystemExit("pattern not found")
 p.write_text(t.replace(old, new, 1))
 print("setlocalversion patched")

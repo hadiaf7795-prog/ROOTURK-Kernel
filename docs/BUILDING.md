@@ -1,20 +1,29 @@
-# Derleme
+# Building ROOTURK Kernel
 
-## Ortam
+Standalone GKI build (no Kleaf / no full AOSP tree). Target: `Image.gz` for AnyKernel3.
 
-Windows’ta native `make` yok. WSL2 **Ubuntu 24.04**, pratikte 12 GB RAM + swap.
+## Environment
 
-Örnek yerleşim:
+Windows cannot run this `make` natively. Use **WSL2 Ubuntu 24.04** or a Linux box. Plan for **12 GB RAM** plus swap.
+
+Suggested layout:
 
 ```text
-/root/android/src/common          # EVONIX-Kernel (hyperos/ksu-susfs)
+~/ROOTURK-Kernel                 # this git clone (keep it on Linux ext4, not /mnt/c)
 /root/android/toolchain/clang-r510928
-/root/android/out                 # O= çıktı
 ```
 
-Clang: Android 15 `clang-r510928` (linux-x86 prebuilt).
+Clone on the Windows NTFS mount (`/mnt/c/...`) if you want, but the build will be much slower.
 
-Paketler (Ubuntu):
+### Clang
+
+Android 15 **clang-r510928** (linux-x86 prebuilt). Put `bin/` on `PATH`, or:
+
+```bash
+export CLANG_BIN=/root/android/toolchain/clang-r510928/bin
+```
+
+### Packages (Ubuntu)
 
 ```bash
 apt-get install -y git git-lfs build-essential flex bison libssl-dev libelf-dev \
@@ -23,49 +32,75 @@ apt-get install -y git git-lfs build-essential flex bison libssl-dev libelf-dev 
   gcc-aarch64-linux-gnu
 ```
 
-Kaynak:
+### Get the source
 
 ```bash
-git clone --recurse-submodules --depth 1 -b hyperos/ksu-susfs \
-  https://github.com/NEESCHAL-3/EVONIX-Kernel.git /root/android/src/common
+git clone --recurse-submodules https://github.com/RooTurkk/ROOTURK-Kernel.git
+cd ROOTURK-Kernel
 ```
 
-`scripts/patch-setlocalversion.py` ve `patch-extract-cert.py` host araç ırkı / LOCALVERSION için gerekebilir (ilk derlemede görüldü).
+The kernel lives in `kernel/`. KernelSU Next is already vendored under `kernel/KernelSU-Next/`.
 
-## Adımlar
+Clone on **Linux / WSL ext4**. The tree contains files that differ only by case (`xt_CONNMARK.h` vs `xt_connmark.h`). A checkout on Windows NTFS cannot hold both.
 
-Tüm scriptler `PATH` içine Clang `bin/` koyar, `ARCH=arm64 LLVM=1 LLVM_IAS=1`.
+One-time host patches are **already applied** in `kernel/`. Re-run only if you replace that tree with stock GKI:
 
-1. **`build-config.sh`**  
-   `make gki_defconfig` → `evonix.config` merge → `olddefconfig`.
+```bash
+export KERNEL_SRC="$PWD/kernel"
+python3 scripts/patch-setlocalversion.py
+python3 scripts/patch-extract-cert.py
+```
 
-2. **`fix-rooturk-config.sh`**  
-   `configs/rooturk.config` ile aynı anahtarlar: LOCALVERSION, MTE/KASAN, ZSWAP, **TEO kapalı**.  
-   `gki_defconfig` içinde `CONFIG_CPU_IDLE_GOV_TEO` satırını da `is not set` yapar (sonraki sade `gki_defconfig` TEO’yu geri getirmesin).  
-   Makefile `EXTRAVERSION = -1.0.0-ROOTURK-V1.0`.  
-   `make -j4 Image.gz`.
+## Build steps
 
-3. Kontrol:
+Scripts set `ARCH=arm64 LLVM=1 LLVM_IAS=1` and prefer `HOSTCC=gcc`.
+
+1. **`scripts/build-config.sh`**  
+   `make gki_defconfig` → merge `kernel/arch/arm64/configs/rooturk_gki.config` → `olddefconfig`.
+
+2. **`scripts/fix-rooturk-config.sh`**  
+   Applies `configs/rooturk.config`: `LOCALVERSION=-android15-8-4k`, MTE / KASAN HW tags, ZSWAP, **TEO off**, MENU on.  
+   Also forces `CONFIG_CPU_IDLE_GOV_TEO` off in `gki_defconfig` so a later plain defconfig does not turn TEO back on.  
+   Sets `EXTRAVERSION = -1.0.0-ROOTURK-V1.0`.  
+   Runs `make -j4 Image.gz`.
+
+3. Confirm:
 
 ```text
-cat /root/android/out/include/generated/utsrelease.h
+cat out/include/generated/utsrelease.h
 # 6.6.142-1.0.0-ROOTURK-V1.0-android15-8-4k
 
-grep CPU_IDLE_GOV /root/android/out/.config
+grep CPU_IDLE_GOV out/.config
 # MENU=y, TEO is not set
 
-grep teo_governor /root/android/out/System.map   # boş olmalı
-grep menu_governor /root/android/out/System.map  # olmalı
+grep teo_governor out/System.map    # must be empty
+grep menu_governor out/System.map   # must exist
 ```
 
-4. **`pack-rooturk.sh`**  
-   EVONIX AnyKernel3 şablonundan zip üretir, `Image.gz` kopyalar.  
-   Varsayılan çıktı yolu script içinde Windows mount’a ayarlıdır; kendi `SRC_ZIP` / `WIN_ZIP` yollarını düzenle.
+4. **`scripts/pack-rooturk.sh`**  
+   Copies `Image.gz` into `anykernel/` and zips `1.0.0-ROOTURK-V1.0.zip`.
 
-`TRIM_UNUSED_KSYMS` açma. Vendor `wlan` / `conninfra` GKI sembolleri kesilince cihaz açılmaz.
+Override paths if needed:
 
-## Host notları
+```bash
+export KERNEL_SRC=/path/to/kernel
+export KERNEL_OUT=/path/to/out
+export CLANG_BIN=/path/to/clang-r510928/bin
+export ROOTURK_ZIP_OUT=/path/to/dist
+```
 
-- `HOSTCC=gcc HOSTCXX=g++` — Clang ile host `extract-cert` ırkı görüldü.
-- `LOCALVERSION=` boş geçilir; isim EXTRAVERSION + CONFIG_LOCALVERSION’dan gelir.
-- Tam temiz derleme ~45–90 dk (`-j4`). Config-only idle değişikliği daha kısa.
+## Rules that keep the phone booting
+
+- Do **not** enable `TRIM_UNUSED_KSYMS` without a Kleaf symbol whitelist. Vendor `wlan` / `conninfra` need GKI exports; trim = bootloop.
+- Do **not** force `MODULE_SIG_FORCE` / `MODULE_SIG_PROTECT` if you still load OEM modules.
+- Keep `HOSTCC=gcc` for `extract-cert` if Clang miscompiles the host tool.
+- Pass `LOCALVERSION=` (empty) on the `make` line so the name comes from `EXTRAVERSION` + `CONFIG_LOCALVERSION` only. Git `-dirty` suffixes break vendor vermagic.
+- Clean Image.gz build is about **45–90 minutes** at `-j4`. Config-only idle changes are shorter.
+
+## Incremental Image only
+
+If `.config` is already correct:
+
+```bash
+bash scripts/build-image.sh
+```

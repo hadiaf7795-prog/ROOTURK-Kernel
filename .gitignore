@@ -1,8 +1,17 @@
 out/
+dist/
+anykernel/Image
+anykernel/Image.gz
+anykernel/Image.lz4
 *.img
 Image
 Image.gz
 *.zip
 *.tar.gz
+*.o
+*.a
+*.ko
 .DS_Store
 Thumbs.db
+*.pyc
+__pycache__/

@@ -1,11 +1,12 @@
-This repository contains build scripts and configuration fragments for a
-Linux kernel derived from Android GKI / EVONIX.
+This tree is a Linux kernel for Android GKI, plus ROOTURK packaging scripts.
 
-The Linux kernel is licensed under the GNU General Public License v2.
-See https://www.kernel.org/doc/html/latest/process/license-rules.html
+The kernel (`kernel/`) is licensed under the GNU General Public License v2.
+See kernel/COPYING and https://www.kernel.org/doc/html/latest/process/license-rules.html
 
-Scripts in this repository that are original to ROOTURK are provided
-under GPL-2.0-only, the same terms as the kernel they configure.
+ROOTURK scripts, AnyKernel wrapper text, and documentation in this repository
+are provided under GPL-2.0-only, the same terms as the kernel they build.
 
-Upstream:
-  https://github.com/NEESCHAL-3/EVONIX-Kernel
+KernelSU Next is included under kernel/KernelSU-Next/ and keeps its own license
+file.
+
+AnyKernel3 tools are (c) osm0sis and contributors; see files under anykernel/.
