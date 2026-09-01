@@ -2,7 +2,7 @@
 
 Türkçe özet: [README.md](README.md) · English overview: [README.en.md](README.en.md)
 
-For **POCO X7 Pro (`rodin`)** only. Wrong device = no boot.
+For **POCO X7 Pro (`rodin`)** on **Android 16** only. Wrong device = no boot.
 
 ## Before you flash
 

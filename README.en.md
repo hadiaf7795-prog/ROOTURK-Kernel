@@ -1,12 +1,13 @@
 # ROOTURK Kernel
 
-Custom **Android 15 GKI** kernel for the **POCO X7 Pro** (`rodin`).
+Custom GKI kernel for the **POCO X7 Pro** (`rodin`) on **Android 16**.
 
 Türkçe: [README.md](README.md)
 
 | | |
 |---|---|
 | Device | POCO X7 Pro (2412DPC0AG) |
+| Android | 16 |
 | SoC | MediaTek Dimensity 8400 Ultra (MT6899) |
 | Release | `6.6.142-1.0.0-ROOTURK-V1.0-android15-8-4k` |
 | Page size | 4K |
@@ -63,7 +64,7 @@ Optional Wi-Fi game mode (also installed from the Manager **Network** page): `sc
 
 Full steps: **[docs/BUILDING.md](docs/BUILDING.md)**.
 
-You need **WSL2 Ubuntu 24.04** (or native Linux), Android 15 **Clang r510928**, and about 12 GB RAM.
+You need **WSL2 Ubuntu 24.04** (or native Linux), AOSP **Clang r510928**, and about 12 GB RAM.
 
 ```bash
 git clone --recurse-submodules https://github.com/RooTurkk/ROOTURK-Kernel.git

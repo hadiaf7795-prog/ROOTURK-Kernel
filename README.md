@@ -1,12 +1,13 @@
 # ROOTURK Kernel
 
-**POCO X7 Pro** (`rodin`) için özel **Android 15 GKI** çekirdeği.
+**POCO X7 Pro** (`rodin`, **Android 16**) için özel GKI çekirdeği.
 
 English: [README.en.md](README.en.md)
 
 | | |
 |---|---|
 | Cihaz | POCO X7 Pro (2412DPC0AG) |
+| Android | 16 |
 | SoC | MediaTek Dimensity 8400 Ultra (MT6899) |
 | Sürüm | `6.6.142-1.0.0-ROOTURK-V1.0-android15-8-4k` |
 | Sayfa boyutu | 4K |
@@ -63,7 +64,7 @@ adb shell su -c "cat /sys/devices/system/cpu/cpuidle/available_governors"
 
 Ayrıntı: **[docs/BUILDING.md](docs/BUILDING.md)**.
 
-**WSL2 Ubuntu 24.04** (veya yerli Linux), Android 15 **Clang r510928**, yaklaşık 12 GB RAM gerekir.
+**WSL2 Ubuntu 24.04** (veya yerli Linux), AOSP **Clang r510928**, yaklaşık 12 GB RAM gerekir.
 
 ```bash
 git clone --recurse-submodules https://github.com/RooTurkk/ROOTURK-Kernel.git

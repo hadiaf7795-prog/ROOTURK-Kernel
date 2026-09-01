@@ -17,7 +17,7 @@ Clone on the Windows NTFS mount (`/mnt/c/...`) if you want, but the build will b
 
 ### Clang
 
-Android 15 **clang-r510928** (linux-x86 prebuilt). Put `bin/` on `PATH`, or:
+AOSP **clang-r510928** (linux-x86 prebuilt). Put `bin/` on `PATH`, or:
 
 ```bash
 export CLANG_BIN=/root/android/toolchain/clang-r510928/bin
