@@ -30,6 +30,15 @@ $CFG --enable MEMFD_ASHMEM_SHIM
 $CFG --enable PM_AUTOSLEEP
 $CFG --disable MODULE_SIG_FORCE
 $CFG --disable MODULE_SIG_PROTECT
+echo "CONFIG_CFG80211=y" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_MAC80211=y" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_NL80211_TESTMODE=y" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_MT76_CORE=m" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_MT76_USB=m" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_MT76x2_COMMON=m" >> arch/arm64/configs/gki_defconfig
+echo "CONFIG_MT76x2u=m" >> arch/arm64/configs/gki_defconfig
+
+
 # TEO mispredicts UDP/game packet gaps, parks CPU0 in s2idle (~20 ms
 # wakeup) while wlan IRQs sit on that CPU. Keep MENU; vendor still
 # provides lpm_gov_mhsp.
