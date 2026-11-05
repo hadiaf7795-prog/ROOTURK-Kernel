@@ -1,0 +1,33 @@
+name: Build ROOTURK Kernel Cloud
+on:
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: 'false'
+    - name: Set Up Environment
+      run: |
+        sudo apt update && sudo apt install -y bc build-essential libncurses5-dev libssl-dev xz-utils binutils-aarch64-linux-gnu git bison flex libelf-dev clang lld zip
+        git clone --depth=1 https://github.com clang
+    - name: Compile and Pack
+      run: |
+        export CLANG_BIN=$(pwd)/clang/bin
+        export PATH=$CLANG_BIN:$PATH
+        bash scripts/build-config.sh
+        bash scripts/fix-rooturk-config.sh
+        cd kernel
+        make O=out gki_defconfig ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang
+        make -j$(nproc) O=out ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- CC=clang || true
+        cd ..
+        IMAGE_FILE=$(find kernel/out/arch/arm64/boot/ -name "Image*" | head -n 1)
+        if [ -f "$IMAGE_FILE" ]; then cp $IMAGE_FILE anykernel/; fi
+        cd anykernel && zip -r ../ROOTURK-Custom-rodin.zip *
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Custom-Kernel
+        path: ROOTURK-Custom-rodin.zip
